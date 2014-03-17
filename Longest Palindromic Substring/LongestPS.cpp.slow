@@ -1,0 +1,77 @@
+#include<iostream>
+#include<string>
+#include<list>
+
+using namespace std;
+
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        if (s.length()<=1)
+            return s;
+        int start_length=0;
+        list<int> even; //store the first index of two middle elements
+        list<int> odd; //store the middle index
+        //scan the s
+        char pre,cur;
+        int byfar_length=1;
+        for(int i=1;i<s.length();i++)
+        {
+            pre=s[i-1];cur=s[i];
+            if (pre==cur) {
+                even.push_back(i-1);byfar_length++;}
+            else{
+                if(byfar_length>start_length)start_length=byfar_length;byfar_length=1;}
+            if ((i+1)<s.length() && pre==s[i+1]) 
+                odd.push_back(i);
+        }
+        if(byfar_length>start_length) start_length=byfar_length; 
+        //find the palindrome ones
+        list<int>::iterator it;
+        int finalstart;
+        int finallen;
+        for(int len=start_length;len<=s.size();len++)
+        {
+            if (len%2==0 && even.size()>0) {
+                it = even.begin();
+                while(it!=even.end())
+                {
+                    if(*it<len/2-1 || *it>(s.size()-len/2-1) || !isP(s.substr(*it-len/2+1,len)))
+                        even.erase(it++);
+                    else { finalstart=*it-len/2+1;finallen=len;++it;}
+                }                
+            }
+            if (len%2==1 && odd.size()>0)
+            {
+                it = odd.begin();
+                while(it!=odd.end())
+                {
+                    if(*it<((len-1)/2) || *it>(s.size()-(len+1)/2) || !isP(s.substr(*it-(len-1)/2,len)))
+                        even.erase(it++);
+                    else { finalstart=*it-(len-1)/2;finallen=len;++it;}
+                }  
+            }
+            if (even.size()==0 && odd.size()==0)
+                break;
+        }
+        return s.substr(finalstart,finallen);
+    }
+    bool isP(string s){
+        for (int i=0;i<(s.length()/2);i++)
+        {
+            if (s[i]!=s[s.length()-i-1])
+                return false;
+        }
+        return true;
+    }
+};
+
+int main()
+{
+    string s = "abbabbaxabbabba toppottoppottoppot abbabbayabbabba";
+    s = "abababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababa";
+    Solution solu;
+    string substring = solu.longestPalindrome(s);
+    cout<<substring<<endl;
+    return 0;
+}
